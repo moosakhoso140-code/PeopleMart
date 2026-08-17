@@ -1,8 +1,6 @@
-import sqlalchemy
-
 from sqlalchemy import Integer, String, Column, Float
 
-from databaseSetup.database import Base
+from database import Base
 
 
 class Item(Base):
