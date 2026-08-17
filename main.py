@@ -91,24 +91,20 @@ def get_all_items(request: Request, db: Session = Depends(get_db)):
 
 @app.get("/api/products")
 def get_all_products(db: Session = Depends(get_db)):
-    try:
-        db_items = db.query(Item).all()
-        return [
-            {
-                "ItemID": item.ItemID,
-                "ItemName": item.ItemName,
-                "ItemDescription": item.ItemDescription,
-                "ItemImage": item.ItemImage,
-                "ItemStock": item.ItemStock,
-                "ItemPrice": item.ItemPrice,
-                "ItemGroup": item.ItemGroup,
-            }
-            for item in db_items
-        ]
-    except Exception as e:
-        print(f"Error fetching products: {str(e)}")
-        # Return empty list or JSON error instead of crashing the server
-        return []
+    db_items = db.query(Item).all()
+    return [
+        {
+            "ItemID": item.ItemID,
+            "ItemName": item.ItemName,
+            "ItemDescription": item.ItemDescription,
+            "ItemImage": item.ItemImage,
+            "ItemStock": item.ItemStock,
+            "ItemPrice": item.ItemPrice,
+            "ItemGroup": item.ItemGroup,
+        }
+        for item in db_items
+    ]
+
 
 @app.post("/add_item")
 def create_item(item: AddItem, db: Session = Depends(get_db)):
