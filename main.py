@@ -13,7 +13,8 @@ from starlette.templating import Jinja2Templates
 
 # Path configuration for Vercel execution environment
 BASE_DIR = Path(__file__).resolve().parent
-sys.path.append(str(BASE_DIR))
+if str(BASE_DIR) not in sys.path:
+    sys.path.append(str(BASE_DIR))
 
 from AddItem import AddItem, orderItems
 from Item import Item
@@ -31,15 +32,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-# Template and static directory paths
+# Template and static directory absolute paths
 templates_path = BASE_DIR / "templates"
 static_path = BASE_DIR / "templates" / "static"
 
 if static_path.exists():
     app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
 
-templates = Jinja2Templates(directory="templates")
+# Use absolute string path for Jinja2
+templates = Jinja2Templates(directory=str(templates_path))
+
+
 # Safe Database Initialization on Startup
 @app.on_event("startup")
 def startup_db_client():
@@ -75,7 +78,12 @@ class OrderCreate(BaseModel):
 
 @app.get("/", response_class=HTMLResponse)
 def get_all_items(request: Request, db: Session = Depends(get_db)):
-    db_items = db.query(Item).all()
+    try:
+        db_items = db.query(Item).all()
+    except Exception as e:
+        print(f"Database fetch failed: {e}")
+        db_items = []
+
     return templates.TemplateResponse(
         request=request, name="Item.html", context={"items": db_items}
     )
@@ -92,7 +100,7 @@ def get_all_products(db: Session = Depends(get_db)):
             "ItemImage": item.ItemImage,
             "ItemStock": item.ItemStock,
             "ItemPrice": item.ItemPrice,
-            "ItemGroup": item.ItemGroup
+            "ItemGroup": item.ItemGroup,
         }
         for item in db_items
     ]
@@ -104,10 +112,7 @@ def create_item(item: AddItem, db: Session = Depends(get_db)):
     db.add(new_itme)
     db.commit()
     db.refresh(new_itme)
-    return {
-        "message": "Item added successfully",
-        "item": new_itme
-    }
+    return {"message": "Item added successfully", "item": new_itme}
 
 
 @app.post("/api/register", response_model=Userresponse)
@@ -136,10 +141,10 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     if not userd or userd.password != user.password:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Incorrect email or password"
+            detail="Incorrect email or password",
         )
 
-    role_str = userd.role.value if hasattr(userd.role, 'value') else str(userd.role)
+    role_str = userd.role.value if hasattr(userd.role, "value") else str(userd.role)
 
     return {
         "message": f"Welcome back, {userd.username}!",
@@ -147,8 +152,8 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
             "id": userd.id,
             "username": userd.username,
             "email": userd.email,
-            "role": role_str.lower().strip()
-        }
+            "role": role_str.lower().strip(),
+        },
     }
 
 
@@ -172,7 +177,7 @@ def create_order(order: OrderCreate, db: Session = Depends(get_db)):
             item_name=order.item_name,
             quantity=order.quantity,
             total_price=order.total_price,
-            status_order=order.status_order
+            status_order=order.status_order,
         )
 
         db.add(new_order)
@@ -190,8 +195,8 @@ def create_order(order: OrderCreate, db: Session = Depends(get_db)):
 def get_all_orders(db: Session = Depends(get_db)):
     orders = db.query(orderItems).all()
     return orders
-@app.get("/favicon.icon")
+
+
+@app.get("/favicon.ico", include_in_schema=False)
 def favicon():
-    return {
-        "message":"find icon"
-    }
+    return {"message": "find icon"}
