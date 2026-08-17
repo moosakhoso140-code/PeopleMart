@@ -1,11 +1,8 @@
-import uuid
-
-
 from pydantic import BaseModel,Field
 
-from sqlalchemy import Column, String, true, Integer, Uuid, UUID
+from sqlalchemy import Column, String, Integer
 
-from databaseSetup.database import Base
+from database import Base
 
 
 class User(Base):

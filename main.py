@@ -1,11 +1,9 @@
-import os
 import sys
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Form, Request, Depends
+from fastapi import FastAPI, HTTPException, Request, Depends
 from pydantic import BaseModel
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette import status
 from starlette.middleware.cors import CORSMiddleware
@@ -17,10 +15,10 @@ from starlette.templating import Jinja2Templates
 BASE_DIR = Path(__file__).resolve().parent
 sys.path.append(str(BASE_DIR))
 
-from databaseSetup.AddItem import AddItem, orderItems
+from AddItem import AddItem, orderItems
 from Model.Item import Item
-from databaseSetup.database import get_db, Base, engine, password
-from databaseSetup.user import User, Userresponse, UserRegister
+from database import get_db, Base, engine
+from user import User, Userresponse, UserRegister
 
 # Initialize App
 app = FastAPI()
