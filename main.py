@@ -16,7 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent
 sys.path.append(str(BASE_DIR))
 
 from AddItem import AddItem, orderItems
-from Model.Item import Item
+from Item import Item
 from database import get_db, Base, engine
 from user import User, Userresponse, UserRegister
 
