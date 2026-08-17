@@ -192,3 +192,8 @@ def create_order(order: OrderCreate, db: Session = Depends(get_db)):
 def get_all_orders(db: Session = Depends(get_db)):
     orders = db.query(orderItems).all()
     return orders
+@app.get("/favicon.icon")
+def favicon():
+    return {
+        "message":"find icon"
+    }
