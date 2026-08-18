@@ -1,26 +1,25 @@
-import os
+from urllib.parse import quote_plus
 
-from sqlalchemy import create_engine
+from sqlalchemy import engine, create_engine
+
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+username = "postgres"
+password = quote_plus("moosa@113")  # Automatically converts '@' to '%40'
+host = "localhost"
+port = "5432"
+db_name = "website"
 
-if not DATABASE_URL:
-    raise RuntimeError("DATABASE_URL environment variable is not set")
-
-engine = create_engine(DATABASE_URL)
-
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
+SQLAlchemy_Url = (
+    f"postgresql://{username}:{password}@{host}:{port}/{db_name}"
 )
+engine=create_engine(SQLAlchemy_Url)
+SessionLocal=sessionmaker(autocommit=False,autoflush=False,bind=engine)
 
-Base = declarative_base()
-
+Base=declarative_base()
 
 def get_db():
-    db = SessionLocal()
+    db=SessionLocal()
     try:
         yield db
     finally:
