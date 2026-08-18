@@ -1,4 +1,10 @@
 fastapi
 uvicorn
+pydantic
+pydantic-settings
+sqlalchemy
+psycopg2-binary
 jinja2
+python-multipart
+starlette
 requests
