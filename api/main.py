@@ -16,11 +16,11 @@ from Model.Item import Item
 
 from databaseSetup.database import get_db, Base, engine, password
 from databaseSetup.user import User, Userresponse, UserRegister
-
+app=FastAPI()
 Base.metadata.create_all(bind=engine)
 
 
-app=FastAPI()
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
